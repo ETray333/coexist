@@ -1,7 +1,6 @@
 
 # 20/5/2026 - prepare modelling windows for GFW data download
 # etray
-# added to github
 
 #1. Download the open source ICES areas shapefile
 #2. Separate these to individual polygons - GFW has size limits, so best to do one at a time
@@ -20,23 +19,16 @@ ices_data <- st_read(external_data)
 ices_data <- st_make_valid(ices_data)
 ices_data <- st_transform(ices_data, 4326)
 
-# base directory
+# do a new folder with them zipped - that is how they go into GFW
 base_dir <- "C:/Users/Elizabeth.Tray/Documents/GitHub/coexist/data/processed"
-
-# date stamp
 today <- format(Sys.Date(), "%Y-%m-%d")
-
-# parent folder (THIS is what you were missing in use)
 output_dir <- file.path(
   base_dir,
-  paste0("ices_areas_processed_to_individual_shapefiles_on_", today)
+  paste0("ices_areas_shapefiles_both_unzipped_and_zipped_processed_on_", today)
 )
-
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
-# loop safely
 unique_ids <- unique(ices_data$Area_Full)
-
 for (id in unique_ids) {
   
   # subset
@@ -47,12 +39,11 @@ for (id in unique_ids) {
   # Replace any character that is NOT a letter, number, underscore, or dot with an underscore”
   safe_name <- gsub("[^A-Za-z0-9_\\.]", "_", id)
   
-  # IMPORTANT: use output_dir (NOT base_dir)
+  # folder for shapefile components
   folder_path <- file.path(output_dir, safe_name)
-  
   dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
   
-  # write shapefile (robust GDAL method)
+  # write shapefile
   st_write(
     poly,
     dsn = folder_path,
@@ -61,6 +52,19 @@ for (id in unique_ids) {
     delete_layer = TRUE,
     quiet = TRUE
   )
+  
+  zip_file <- file.path(output_dir, paste0(safe_name, ".zip"))
+  
+  zip(
+    zipfile = zip_file,
+    files = list.files(folder_path, full.names = TRUE)
+  )
 }
+
+
+
+
+
+
 
 
