@@ -13,7 +13,7 @@ library(gfwr)
 gfw_auth()
 
 
-# List all EEZs
+# List all EEZs - just see if this works-
 eez_regions <- gfw_regions(region_source = "EEZ")
 eez_regions  # Browse this
 
@@ -29,6 +29,7 @@ library(purrr)
 # Note: date range cannot exceed 366 days per call
 # Load your shapefile
 # my_area <- st_read("your_area.shp")
+# 27.7.d
 my_area <- st_read("C:/Users/Elizabeth.Tray/Documents/GitHub/coexist/data/processed/ices_areas_shapefiles_both_unzipped_and_zipped_processed_on_2026-05-20/27.7.d/27.7.d.shp")
 
 # Create the output folder if it doesn't exist yet
@@ -40,11 +41,12 @@ fishing_by_gear_custom <- gfw_ais_fishing_hours(
   spatial_resolution  = "HIGH",
   temporal_resolution = "DAILY",
   group_by            = "GEARTYPE",
-  start_date          = "2021-01-01",
-  end_date            = "2021-12-31",
+  start_date          = "2025-01-01",
+  end_date            = "2025-12-31",
   region              = my_area,
   region_source       = "USER_SHAPEFILE"
 )
+
 
 # Save the result to the new folder
 write.csv(fishing_by_gear_custom, 
